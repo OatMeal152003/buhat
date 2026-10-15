@@ -1,0 +1,313 @@
+/* ==========================================================================
+   BUHAT design system — Tailwind v4 CSS-first tokens
+   Deep charcoal canvas, electric lime accent, athletic display type.
+   ========================================================================== */
+
+@import 'tailwindcss';
+
+@theme {
+  /* Surfaces */
+  --color-bg: #0b0c0e;
+  --color-ink: #08090a;
+  --color-surface: #121417;
+  --color-surface2: #181b1f;
+  --color-line: #24272c;
+  --color-line2: #33373d;
+
+  /* Content */
+  --color-fg: #f4f6f1;
+  --color-muted: #9ba3ac;
+  --color-faint: #6d757e;
+
+  /* Brand */
+  --color-lime: #c6f432;
+  --color-limebright: #d9ff4d;
+  --color-limedim: #8fb322;
+
+  /* Intensity + status */
+  --color-flame: #ff6b35;
+  --color-danger: #ff4d4d;
+
+  /* Type */
+  --font-display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Keep anchored sections clear of the fixed landing header. */
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg font-body text-fg antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: var(--color-lime);
+    color: var(--color-ink);
+  }
+
+  /* Global focus indicator (WCAG 2.4.13) */
+  :focus-visible {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Slim dark scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line2) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-line2);
+    border-radius: 8px;
+    border: 2px solid var(--color-bg);
+  }
+
+  /* Windows high contrast mode */
+  @media (forced-colors: active) {
+    .focus-ring:focus-visible,
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid Highlight;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Component layer — reusable primitives that utilities cannot express well
+   -------------------------------------------------------------------------- */
+@layer components {
+  /* Athletic display type: uppercase, tight tracking, expanded width */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-stretch: 108%;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+  }
+
+  .eyebrow {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Stat / panel surfaces — borders over shadows on dark canvas */
+  .panel {
+    @apply border border-line bg-surface;
+  }
+
+  .panel-2 {
+    @apply border border-line bg-surface2;
+  }
+
+  /* Diagonal slash texture for hero + CTA backdrops */
+  .slashes {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent 0 14px,
+      rgb(198 244 50 / 0.05) 14px 15px
+    );
+  }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .sr-only-data {
+    @apply sr-only;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Motion gating — content is visible by default. Hidden pre-animation state
+   only applies when JS has confirmed animations are allowed.
+   -------------------------------------------------------------------------- */
+[data-motion='on'] [data-reveal] {
+  opacity: 0;
+}
+
+[data-motion='on'] [data-reveal='left'] {
+  transform: translateX(-24px);
+}
+
+[data-motion='on'] [data-reveal='up'] {
+  transform: translateY(24px);
+}
+
+[data-motion='on'] [data-reveal='scale'] {
+  transform: scale(1.06);
+}
+
+/* Elements animated by explicit timelines start hidden to avoid a first-paint flash. */
+[data-motion='on']
+  :is(
+    [data-stagger],
+    [data-toast],
+    [data-step],
+    [data-hero-eyebrow],
+    [data-hero-support],
+    [data-hero-cta],
+    [data-hero-media],
+    [data-hero-chip],
+    [data-hero-scroll],
+    [data-loader-bar],
+    [data-loader-tagline],
+    [data-done-panel],
+    [data-done-word],
+    [data-done-stat],
+    [data-done-pr],
+    [data-menu-item],
+    [data-menu-panel],
+    [data-drawer-panel],
+    [data-drawer-backdrop],
+    [data-modal-backdrop],
+    [data-modal-panel],
+    [data-page-enter]
+  ) {
+  opacity: 0;
+}
+
+/* Transform-based pre-hides: match the exact values the timelines animate from. */
+[data-motion='on'] [data-hero-word] {
+  transform: translateY(118%);
+}
+
+[data-motion='on'] [data-loader-letter] {
+  transform: translateY(115%);
+}
+
+[data-motion='on'] [data-hero-frame] {
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+[data-motion='on'] [data-how-line] {
+  transform: scaleX(0);
+}
+
+/* Bars grow from their baseline; scaleY alone must not depend on opacity. */
+[data-motion='on'] [data-bar],
+[data-motion='on'] [data-grow] {
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+
+[data-motion='on'] [data-drawer-panel] {
+  transform: translateX(-100%);
+}
+
+[data-motion='on'] [data-menu-panel] {
+  transform: translateY(-8px);
+}
+
+[data-motion='on'] [data-modal-panel] {
+  transform: translateY(16px) scale(0.96);
+}
+
+/* Hero scroll cue: a gentle bob once the entrance finishes. Transform only,
+   gated with the rest of the motion system. */
+@keyframes hero-bob {
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+[data-motion='on'] [data-hero-scroll] {
+  animation: hero-bob 2.6s ease-in-out 2.2s infinite;
+}
+
+/* Form error feedback — only animates when motion is allowed. */
+@keyframes field-error-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-motion='on'] .field-error {
+  animation: field-error-in 0.28s ease both;
+}
+
+/* Compact rise-in for transient badges (pause state, inline confirmations). */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-motion='on'] .rise-in {
+  animation: rise-in 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Landing nav underline: slides in from the left on hover/focus. */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  background: var(--color-lime);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Reduced motion: collapse all durations */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
